@@ -1,57 +1,5 @@
 import pygame
 
-win_infos = {
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-}
-
-board_infos = [[{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-}],
-[{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-}],
-[{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-},
-{
-    (0,0): None, (0,1): None, (0,2): None,
-    (1,0): None, (1,1): None, (1,2): None,
-    (2,0): None, (2,1): None, (2,2): None,
-}]]
-
 board_tables = [
     [
         {
@@ -137,12 +85,34 @@ def check_winner(board_info):
         return board_info[(0, 2)]
     return None
 
-def check_global_winner(board_infos):
+def check_global_winner(info):
     # Create a summary board to check for global winner
     summary_board = {}
     for i in range(3):
         for j in range(3):
-            local_winner = check_winner(board_infos[i][j])
+            local_winner = check_winner(info[(i,j)].info)
             summary_board[(i, j)] = local_winner
 
     return check_winner(summary_board)
+
+class Board:
+    def __init__(self, positions, info=None):
+        self.positions = positions
+        self.info = info if info is not None else {
+            (0,0): None, (0,1): None, (0,2): None,
+            (1,0): None, (1,1): None, (1,2): None,
+            (2,0): None, (2,1): None, (2,2): None,
+        }
+        self.winner = check_winner(self.info)
+
+
+class Game:
+    def __init__(self, info=None):
+        self.info = info if info is not None else {
+            (0,0): None, (0,1): None, (0,2): None, 
+            (1,0): None, (1,1): None, (1,2): None, 
+            (2,0): None, (2,1): None, (2,2): None
+        }
+        self.winner = check_global_winner(self.info)
+
+
