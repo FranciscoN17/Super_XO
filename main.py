@@ -1,7 +1,6 @@
 import pygame
 import utils
-from utils import Game
-from utils import Board
+from utils import Board, Game
 
 pygame.init()
 height = 800
@@ -9,41 +8,30 @@ width = 800
 screen = pygame.display.set_mode((height,width))
 pygame.display.set_caption("Super XO")
 
-board00 = Board(utils.board_tables[0][0])
-board10 = Board(utils.board_tables[1][0])
-board20 = Board(utils.board_tables[2][0])
-board01 = Board(utils.board_tables[0][1])
-board11 = Board(utils.board_tables[1][1])
-board21 = Board(utils.board_tables[2][1])
-board02 = Board(utils.board_tables[0][2])
-board12 = Board(utils.board_tables[1][2])
-board22 = Board(utils.board_tables[2][2])
-
-game = Game({(0,0): board00, (0,1): board01, (0,2): board02, 
-             (1,0): board10, (1,1): board11, (1,2): board12, 
-             (2,0): board20, (2,1): board21, (2,2): board22
+game = Game({(0,0): Board(utils.board_tables[0][0]), (0,1): Board(utils.board_tables[0][1]), (0,2): Board(utils.board_tables[0][2]), 
+             (1,0): Board(utils.board_tables[1][0]), (1,1): Board(utils.board_tables[1][1]), (1,2): Board(utils.board_tables[1][2]), 
+             (2,0): Board(utils.board_tables[2][0]), (2,1): Board(utils.board_tables[2][1]), (2,2): Board(utils.board_tables[2][2])
              })
 
+board_sprite = pygame.transform.scale(pygame.image.load("assets/board.png"), (width, height))
 
-board_sprite = pygame.image.load("assets/board.png")
-board_sprite = pygame.transform.scale(board_sprite, (width, height))
+x_sprite = pygame.transform.scale(pygame.image.load("assets/x_sprite.png"), (60, 60))
 
-x_sprite = pygame.image.load("assets/x_sprite.png")
-x_sprite = pygame.transform.scale(x_sprite, (60, 60))
-o_sprite = pygame.image.load("assets/o_sprite.png")
-o_sprite = pygame.transform.scale(o_sprite, (60, 60))
+o_sprite = pygame.transform.scale(pygame.image.load("assets/o_sprite.png"), (60, 60))
 
 running = True
 
 player_turn = "X"
 board_turn = (1,1)
-clicked_pos = None
-free_play = False
+free_play = True
 board_key = None
 
+#Game loop
 while running:
+    #Desenha o tabuleiro de fundo
     screen.blit(board_sprite, (0,0))
     
+    #Desenha o retângulo verde em volta do tabuleiro que pode ser jogado
     if free_play:
         pygame.draw.rect(screen, (0,255,0), (2, 2, width-4, height-4), 3)
     else:
@@ -52,49 +40,62 @@ while running:
     #Desenha X e O na tela de acordo com o que tem salvo nos tabuleiros
     for board_key in game.info:
         for cell_key in game.info[board_key].positions:
-            draw_pos = game.info[board_key].positions[cell_key]
-            if game.info[board_key].info[cell_key] == "X":
-                screen.blit(x_sprite, draw_pos)
-            elif game.info[board_key].info[cell_key] == "O":
-                screen.blit(o_sprite, draw_pos)
+            if not game.info[board_key].winner:
+                draw_pos = game.info[board_key].positions[cell_key]
+                if game.info[board_key].info[cell_key] == "X":
+                    screen.blit(x_sprite, draw_pos)
+                elif game.info[board_key].info[cell_key] == "O":
+                    screen.blit(o_sprite, draw_pos)
+            else:
+                center_pos = (board_key[1]*264+3, board_key[0]*264+3)
+                if game.info[board_key].winner == "X":
+                    screen.blit(pygame.transform.scale(x_sprite, (264, 264)), center_pos)
+                elif game.info[board_key].winner == "O":
+                    screen.blit(pygame.transform.scale(o_sprite, (264, 264)), center_pos)
 
-    #Game loop
+    #Event handler
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
         if utils.handle_click(event):
             clicked_pos = utils.handle_click(event)
-            print("O jogador clicou \n")
-            #if not free_play:
-            board_key = utils.get_board_key_from_pos(clicked_pos, game.info[board_turn].positions)
-            print("Ele clicou na célula ", board_key, "\n")
+            if not free_play:
+                board_key = utils.get_board_key_from_pos(clicked_pos, game.info[board_turn].positions)
 
-            if board_key and not game.info[board_turn].info[board_key]:
-                print("A célula está pronta para receber um valor \n")
-                game.info[board_turn].info[board_key] = player_turn
-                print("A célula ",board_key, "do tabuleiro", board_turn,"recebeu o valor ", player_turn)
-                player_turn = "O" if player_turn == "X" else "X"
-                board_turn = board_key if board_key else board_turn
+                if board_key and not game.info[board_turn].info[board_key]:
+                    game.info[board_turn].info[board_key] = player_turn
+                    player_turn = "O" if player_turn == "X" else "X"
+                    board_turn = board_key if board_key else board_turn
+                    #Determina se o próximo lance é livre ou não
+                    if game.info[board_turn].winner:
+                        free_play = True
+                    else:
+                        free_play = False
 
-            #else:
-            #    for i in range(len(utils.board_tables[0])):
-            #        for j in range(len(utils.board_tables)):
-            #            table = utils.board_tables[i][j]
-            #            key = utils.get_board_key_from_pos(clicked_pos, table)
-            #            if key:
-            #                board_key = key
-            #                board_turn = (i, j)
-            #                break
-            #    if not game.info[(board_turn[0],board_turn[1])].info[board_key]:
-            #        if not game.info[board_turn].winner:
-            #            game.info[(board_turn[0],board_turn[1])].info[board_key] = player_turn
-            #            player_turn = "O" if player_turn == "X" else "X"
-            #            free_play = False
+            else:
+                for table_key in game.info:
+                    table = game.info[table_key].positions
+                    key = utils.get_board_key_from_pos(clicked_pos, table)
+                    if key:
+                        board_key = key
+                        board_turn = table_key
+                        break
+                if not game.info[board_turn].info[board_key]:
+                    if not game.info[board_turn].winner:
+                        game.info[board_turn].info[board_key] = player_turn
+                        player_turn = "O" if player_turn == "X" else "X"
+                        board_turn = board_key if board_key else board_turn
+                        #Determina se o próximo lance é livre ou não
+                        if game.info[board_turn].winner:
+                            free_play = True
+                        else:
+                            free_play = False
 
-    #if game.winner:
-    #    print(f"The winner is: {game.winner}")
-    #    running = False
+    #Finaliza o jogo se houver um vencedor
+    if game.winner:
+        print(f"The winner is: {game.winner}")
+        running = False
 
     pygame.display.flip()
 

@@ -103,7 +103,12 @@ class Board:
             (1,0): None, (1,1): None, (1,2): None,
             (2,0): None, (2,1): None, (2,2): None,
         }
-        self.winner = check_winner(self.info)
+        self._winner = None
+
+    @property
+    def winner(self):
+        self._winner = check_winner(self.info)
+        return self._winner
 
 
 class Game:
@@ -113,6 +118,11 @@ class Game:
             (1,0): None, (1,1): None, (1,2): None, 
             (2,0): None, (2,1): None, (2,2): None
         }
-        self.winner = check_global_winner(self.info)
+        self._winner = None
+
+    @property
+    def winner(self):
+        self._winner = check_global_winner(self.info)
+        return self._winner
 
 
