@@ -8,9 +8,9 @@ width = 800
 screen = pygame.display.set_mode((height,width))
 pygame.display.set_caption("Super XO")
 
-game = Game({(0,0): Board(utils.board_tables[0][0]), (0,1): Board(utils.board_tables[0][1]), (0,2): Board(utils.board_tables[0][2]), 
-             (1,0): Board(utils.board_tables[1][0]), (1,1): Board(utils.board_tables[1][1]), (1,2): Board(utils.board_tables[1][2]), 
-             (2,0): Board(utils.board_tables[2][0]), (2,1): Board(utils.board_tables[2][1]), (2,2): Board(utils.board_tables[2][2])
+game = Game({(0,0): Board(utils.position_table[0][0]), (0,1): Board(utils.position_table[0][1]), (0,2): Board(utils.position_table[0][2]), 
+             (1,0): Board(utils.position_table[1][0]), (1,1): Board(utils.position_table[1][1]), (1,2): Board(utils.position_table[1][2]), 
+             (2,0): Board(utils.position_table[2][0]), (2,1): Board(utils.position_table[2][1]), (2,2): Board(utils.position_table[2][2])
              })
 
 board_sprite = pygame.transform.scale(pygame.image.load("assets/board.png"), (width, height))

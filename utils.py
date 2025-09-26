@@ -1,6 +1,6 @@
 import pygame
 
-board_tables = [
+position_table = [
     [
         {
             (0,0): (40, 40), (0,1): (106, 40), (0,2): (172, 40),
