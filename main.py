@@ -7,9 +7,9 @@ pygame.init()
 screen = pygame.display.set_mode((assets.height,assets.width))
 pygame.display.set_caption("Super XO")
 
-game = Game({(0,0): Board(utils.board_tables[0][0]), (0,1): Board(utils.board_tables[0][1]), (0,2): Board(utils.board_tables[0][2]), 
-             (1,0): Board(utils.board_tables[1][0]), (1,1): Board(utils.board_tables[1][1]), (1,2): Board(utils.board_tables[1][2]), 
-             (2,0): Board(utils.board_tables[2][0]), (2,1): Board(utils.board_tables[2][1]), (2,2): Board(utils.board_tables[2][2])
+game = Game({(0,0): Board(assets.board_tables[0][0]), (0,1): Board(assets.board_tables[0][1]), (0,2): Board(assets.board_tables[0][2]), 
+             (1,0): Board(assets.board_tables[1][0]), (1,1): Board(assets.board_tables[1][1]), (1,2): Board(assets.board_tables[1][2]), 
+             (2,0): Board(assets.board_tables[2][0]), (2,1): Board(assets.board_tables[2][1]), (2,2): Board(assets.board_tables[2][2])
              })
 
 running = True
