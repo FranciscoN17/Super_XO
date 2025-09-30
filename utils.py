@@ -1,60 +1,6 @@
 import pygame
 import assets
 
-board_tables = [
-    [
-        {
-            (0,0): (40, 40), (0,1): (106, 40), (0,2): (172, 40),
-            (1,0): (40, 106), (1,1): (106, 106), (1,2): (172, 106),
-            (2,0): (40, 172), (2,1): (106, 172), (2,2): (172, 172),
-        },
-        {
-            (0,0): (303, 40), (0,1): (369, 40), (0,2): (435, 40),
-            (1,0): (303, 106), (1,1): (369, 106), (1,2): (435, 106),
-            (2,0): (303, 172), (2,1): (369, 172), (2,2): (435, 172),
-        },
-        {
-            (0,0): (566, 40), (0,1): (632, 40), (0,2): (698, 40),
-            (1,0): (566, 106), (1,1): (632, 106), (1,2): (698, 106),
-            (2,0): (566, 172), (2,1): (632, 172), (2,2): (698, 172),
-        },
-    ],
-    [
-        {
-            (0,0): (40, 303), (0,1): (106, 303), (0,2): (172, 303),
-            (1,0): (40, 369), (1,1): (106, 369), (1,2): (172, 369),
-            (2,0): (40, 435), (2,1): (106, 435), (2,2): (172, 435),
-        },
-        {
-            (0,0): (303, 303), (0,1): (369, 303), (0,2): (435, 303),
-            (1,0): (303, 369), (1,1): (369, 369), (1,2): (435, 369),
-            (2,0): (303, 435), (2,1): (369, 435), (2,2): (435, 435),
-        },
-        {
-            (0,0): (566, 303), (0,1): (632, 303), (0,2): (698, 303),
-            (1,0): (566, 369), (1,1): (632, 369), (1,2): (698, 369),
-            (2,0): (566, 435), (2,1): (632, 435), (2,2): (698, 435),
-        },
-    ],
-    [
-        {
-            (0,0): (40, 566), (0,1): (106, 566), (0,2): (172, 566),
-            (1,0): (40, 632), (1,1): (106, 632), (1,2): (172, 632),
-            (2,0): (40, 698), (2,1): (106, 698), (2,2): (172, 698),
-        },
-        {
-            (0,0): (303, 566), (0,1): (369, 566), (0,2): (435, 566),
-            (1,0): (303, 632), (1,1): (369, 632), (1,2): (435, 632),
-            (2,0): (303, 698), (2,1): (369, 698), (2,2): (435, 698),
-        },
-        {
-            (0,0): (566, 566), (0,1): (632, 566), (0,2): (698, 566),
-            (1,0): (566, 632), (1,1): (632, 632), (1,2): (698, 632),
-            (2,0): (566, 698), (2,1): (632, 698), (2,2): (698, 698),
-        },
-    ],
-]
-
 def make_move(game, board_turn, board_key, player_turn):
     game.info[board_turn].info[board_key] = player_turn
     player_turn = "O" if player_turn == "X" else "X"
@@ -132,16 +78,6 @@ def show_game(game, screen, free_play, board_turn):
                 elif game.info[board_key].winner == "O":
                     screen.blit(pygame.transform.scale(assets.o_sprite, (264, 264)), center_pos)
 
-def check_global_winner(info):
-    # Create a summary board to check for global winner
-    summary_board = {}
-    for i in range(3):
-        for j in range(3):
-            local_winner = check_winner(info[(i,j)].info)
-            summary_board[(i, j)] = local_winner
-
-    return check_winner(summary_board)
-
 class Board:
     def __init__(self, positions, info=None):
         self.positions = positions
@@ -154,7 +90,8 @@ class Board:
 
     @property
     def winner(self):
-        self._winner = check_winner(self.info)
+        if self._winner == None:
+            self._winner = check_winner(self.info)
         return self._winner
 
 
@@ -169,7 +106,7 @@ class Game:
 
     @property
     def winner(self):
-        self._winner = check_global_winner(self.info)
+        self._winner = check_winner({k: v.winner for k, v in self.info.items()})
         return self._winner
 
 
