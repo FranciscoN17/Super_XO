@@ -1,6 +1,8 @@
 # Super XO
 
-Short description of your project.
+A python-based version of the [Ultimate Tic-Tac-Toe](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) game.
+
+<img src="assets/sample_game.png" alt="Texto alternativo" width="400"/>
 
 ## Installation
 
