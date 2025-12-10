@@ -56,6 +56,11 @@ while running:
     if game.winner:
         print(f"The winner is: {game.winner}")
         running = False
+        
+    #Finaliza o jogo se houver empate
+    if game.draw:
+        print("It's a draw!")
+        running = False
 
     pygame.display.flip()
 
