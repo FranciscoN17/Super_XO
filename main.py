@@ -1,6 +1,7 @@
 import pygame
 import utils
 import assets
+import menu
 from utils import Board, Game
 
 pygame.init()
@@ -19,50 +20,69 @@ board_turn = (1,1)
 free_play = True
 board_key = None
 
+# Menu: Possible game states
+MENU_STATE = 0
+GAME_STATE = 1
+GAME_OVER_STATE = 2 
+# Set the initial state
+current_state = MENU_STATE
+
 #Game loop
 while running:
+    # Get all events first
+    events = pygame.event.get()
 
-    #Mostra a UI do jogo
-    utils.show_game(game, screen, free_play, board_turn)
-
-    #Event handler
-    for event in pygame.event.get():
-        #Fecha a janela se o jogador clicar em fechar
+    # Event handler for quitting the game
+    for event in events:
         if event.type == pygame.QUIT:
             running = False
+            
+    if current_state == MENU_STATE:
+        current_state = menu.draw_menu(screen, events, current_state, GAME_STATE)
 
-        #Verifica se o jogador clicou em algum lugar
-        if utils.handle_click(event):
-            clicked_pos = utils.handle_click(event)
-            #Caso a jogada atual não seja livre
-            if not free_play:
-                #Verifica em qual célula do tabuleiro o jogador clicou
-                board_key = utils.get_board_key_from_pos(clicked_pos, game.info[board_turn].positions)
+    elif current_state == GAME_STATE:
 
-                #Faz a jogada se a célula estiver vazia
-                if board_key and not game.info[board_turn].info[board_key]:
-                    game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
+        #Mostra a UI do jogo
+        utils.show_game(game, screen, free_play, board_turn)
 
-            #Caso a jogada atual seja livre
-            else:
-                #Verifica em qual célula do tabuleiro o jogador clicou
-                board_key, board_turn = utils.get_board_key_from_pos_global(game, clicked_pos)
+        #Event handler
+        for event in pygame.event.get():
+            #Fecha a janela se o jogador clicar em fechar
+            if event.type == pygame.QUIT:
+                running = False
 
-                #Faz a jogada se a célula estiver vazia e disponível
-                if board_key and not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
-                    game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
+            #Verifica se o jogador clicou em algum lugar
+            if utils.handle_click(event):
+                clicked_pos = utils.handle_click(event)
+                #Caso a jogada atual não seja livre
+                if not free_play:
+                    #Verifica em qual célula do tabuleiro o jogador clicou
+                    board_key = utils.get_board_key_from_pos(clicked_pos, game.info[board_turn].positions)
 
-    #Finaliza o jogo se houver um vencedor
-    if game.winner:
-        print(f"The winner is: {game.winner}")
-        running = False
-        
-    #Finaliza o jogo se houver empate
-    if game.draw:
-        print("It's a draw!")
-        running = False
+                    #Faz a jogada se a célula estiver vazia
+                    if board_key and not game.info[board_turn].info[board_key]:
+                        game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
 
-    pygame.display.flip()
+                #Caso a jogada atual seja livre
+                else:
+                    #Verifica em qual célula do tabuleiro o jogador clicou
+                    board_key, board_turn = utils.get_board_key_from_pos_global(game, clicked_pos)
+
+                    #Faz a jogada se a célula estiver vazia e disponível
+                    if board_key and not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
+                        game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
+
+        #Finaliza o jogo se houver um vencedor
+        if game.winner:
+            print(f"The winner is: {game.winner}")
+            running = False
+            
+        #Finaliza o jogo se houver empate
+        if game.draw:
+            print("It's a draw!")
+            running = False
+
+        pygame.display.flip()
 
         
 pygame.quit()
