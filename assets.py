@@ -1,4 +1,8 @@
 import pygame
+
+if not pygame.get_init():
+    pygame.init()
+
 height = 800
 width = 800
 board_sprite = pygame.transform.scale(pygame.image.load("assets/board.png"), (width, height))
@@ -60,3 +64,26 @@ board_tables = [
         },
     ],
 ]
+
+
+# --- New Font Definitions ---
+FONT_PATH = "assets/PressStart2P-vaV7.ttf" # Adjust this path if needed!
+
+# Load the font and handle potential file not found error
+try:
+    # Title Font (larger)
+    TITLE_FONT = pygame.font.Font(FONT_PATH, 48)
+    
+    # Button/UI Font (smaller)
+    BUTTON_FONT = pygame.font.Font(FONT_PATH, 32)
+    
+    # You could also define a smaller font for in-game text
+    SMALL_FONT = pygame.font.Font(FONT_PATH, 20)
+
+except pygame.error as e:
+    print(f"Error loading font file: {FONT_PATH}. Falling back to default font.")
+    # Fallback to a system font if the custom one fails
+    TITLE_FONT = pygame.font.Font(None, 74)
+    BUTTON_FONT = pygame.font.Font(None, 50)
+    SMALL_FONT = pygame.font.Font(None, 30)
+

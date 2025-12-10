@@ -4,7 +4,7 @@ import assets
 import menu
 from utils import Board, Game
 
-pygame.init()
+# pygame.init()
 screen = pygame.display.set_mode((assets.height,assets.width))
 pygame.display.set_caption("Super XO")
 
@@ -23,7 +23,9 @@ board_key = None
 # Menu: Possible game states
 MENU_STATE = 0
 GAME_STATE = 1
-GAME_OVER_STATE = 2 
+GAME_OVER_DRAW_STATE = 2 
+GAME_OVER_X_STATE = 3
+GAME_OVER_O_STATE = 4
 # Set the initial state
 current_state = MENU_STATE
 
@@ -39,6 +41,10 @@ while running:
             
     if current_state == MENU_STATE:
         current_state = menu.draw_menu(screen, events, current_state, GAME_STATE)
+    
+    if current_state in (GAME_OVER_DRAW_STATE, GAME_OVER_X_STATE, GAME_OVER_O_STATE):
+        current_state = menu.draw_game_over(screen, events, current_state, MENU_STATE)
+    
 
     elif current_state == GAME_STATE:
 
@@ -75,12 +81,15 @@ while running:
         #Finaliza o jogo se houver um vencedor
         if game.winner:
             print(f"The winner is: {game.winner}")
-            running = False
+            # running = False
+            current_state = GAME_OVER_X_STATE if game.winner == "X" else GAME_OVER_O_STATE
+
             
         #Finaliza o jogo se houver empate
         if game.draw:
             print("It's a draw!")
-            running = False
+            # running = False
+            current_state = GAME_OVER_DRAW_STATE
 
         pygame.display.flip()
 
