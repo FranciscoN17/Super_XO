@@ -44,13 +44,7 @@ def draw_menu(screen, events, current_state, GAME_STATE):
             if play_button.collidepoint(event.pos):
                 # Transition to the GAME_STATE
                 current_state = GAME_STATE
-                # Re-initialize game if needed (optional, but safe)
-                # global game, player_turn, board_turn, free_play
-                # game = Game({...}) # Recreate the game object
-                # player_turn = "X" 
-                # board_turn = (1,1)
-                # free_play = True
-                
+
     pygame.display.flip()
 
     return current_state

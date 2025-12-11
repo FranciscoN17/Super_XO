@@ -26,6 +26,7 @@ GAME_STATE = 1
 GAME_OVER_DRAW_STATE = 2 
 GAME_OVER_X_STATE = 3
 GAME_OVER_O_STATE = 4
+
 # Set the initial state
 current_state = MENU_STATE
 
