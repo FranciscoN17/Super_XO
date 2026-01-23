@@ -16,6 +16,19 @@ class Board:
         if self._winner == None:
             self._winner = check_winner(self.info)
         return self._winner
+    
+    @property
+    def draw(self):
+        # Check if all cells are filled
+        for value in self.info.values():
+            if value is None:
+                return False
+        
+        # If there's a winner, it's not a draw
+        if self.winner:
+            return False
+        
+        return True
 
 
 class Game:
@@ -34,6 +47,20 @@ class Game:
     def winner(self):
         self._winner = check_winner({k: v.winner for k, v in self.info.items()})
         return self._winner
+    
+    @property
+    def draw(self):
+
+        # Check if all boards are won or drawn
+        for board in self.info.values():
+            if not board.winner and not board.draw:
+                return False
+        
+        # If there's a winner, it's not a draw
+        if self.winner:
+            return False
+        
+        return True
 
 boards = {(i, j): Board(assets.board_tables[i][j]) for i in range(3) for j in range(3)}
 
