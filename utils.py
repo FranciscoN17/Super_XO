@@ -115,3 +115,5 @@ def show_game(game: Game, screen):
                     screen.blit(pygame.transform.scale(assets.o_sprite, (264, 264)), center_pos)
 
 
+
+
