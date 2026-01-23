@@ -18,10 +18,7 @@ symbols = ["X", "O"]
 
 print("Servidor aguardando jogadores...")
 
-game = Game({(0,0): Board(assets.board_tables[0][0]), (0,1): Board(assets.board_tables[0][1]), (0,2): Board(assets.board_tables[0][2]), 
-             (1,0): Board(assets.board_tables[1][0]), (1,1): Board(assets.board_tables[1][1]), (1,2): Board(assets.board_tables[1][2]), 
-             (2,0): Board(assets.board_tables[2][0]), (2,1): Board(assets.board_tables[2][1]), (2,2): Board(assets.board_tables[2][2])
-             })
+game = Game(utils.boards)
 
 def receive(socket, symbol):
     global game

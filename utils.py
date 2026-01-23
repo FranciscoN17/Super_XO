@@ -35,6 +35,8 @@ class Game:
         self._winner = check_winner({k: v.winner for k, v in self.info.items()})
         return self._winner
 
+boards = {(i, j): Board(assets.board_tables[i][j]) for i in range(3) for j in range(3)}
+
 def make_move(game: Game, board_turn, board_key):
     game.info[board_turn].info[board_key] = game.player_turn
     game.player_turn = "O" if game.player_turn == "X" else "X"
@@ -113,7 +115,3 @@ def show_game(game: Game, screen):
                     screen.blit(pygame.transform.scale(assets.x_sprite, (264, 264)), center_pos)
                 elif game.info[board_key].winner == "O":
                     screen.blit(pygame.transform.scale(assets.o_sprite, (264, 264)), center_pos)
-
-
-
-
