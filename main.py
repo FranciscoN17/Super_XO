@@ -12,11 +12,6 @@ game = Game(utils.boards)
 
 running = True
 
-player_turn = "X"
-board_turn = (1,1)
-free_play = True
-board_key = None
-
 # Menu: Possible game states
 MENU_STATE = 0
 GAME_STATE = 1
@@ -47,7 +42,7 @@ while running:
     elif current_state == GAME_STATE:
 
         #Mostra a UI do jogo
-        utils.show_game(game, screen, free_play, board_turn)
+        utils.show_game(game, screen)
 
         #Event handler
         for event in pygame.event.get():
@@ -59,14 +54,13 @@ while running:
             if utils.handle_click(event):
                 clicked_pos = utils.handle_click(event)
                 #Caso a jogada atual não seja livre
-                if not free_play:
+                if not game.free_play:
                     #Verifica em qual célula do tabuleiro o jogador clicou
-                    board_key = utils.get_board_key_from_pos(clicked_pos, game.info[board_turn].positions)
+                    board_key = utils.get_board_key_from_pos(clicked_pos, game.info[game.board_turn].positions)
 
                     #Faz a jogada se a célula estiver vazia
-                    if board_key and not game.info[board_turn].info[board_key]:
-                        game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
-
+                    if board_key and not game.info[game.board_turn].info[board_key]:
+                        game = utils.make_move(game, game.board_turn, board_key)
                 #Caso a jogada atual seja livre
                 else:
                     #Verifica em qual célula do tabuleiro o jogador clicou
@@ -74,7 +68,7 @@ while running:
 
                     #Faz a jogada se a célula estiver vazia e disponível
                     if board_key and not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
-                        game, player_turn, board_turn, free_play = utils.make_move(game, board_turn, board_key, player_turn)
+                        game = utils.make_move(game, board_turn, board_key)
 
         #Finaliza o jogo se houver um vencedor
         if game.winner:
