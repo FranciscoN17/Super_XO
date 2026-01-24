@@ -30,9 +30,10 @@ class Board:
         
         return True
 
+boards = {(i, j): Board(assets.board_tables[i][j]) for i in range(3) for j in range(3)}
 
 class Game:
-    def __init__(self, info=None):
+    def __init__(self, info=boards):
         self.info = info if info is not None else {
             (0,0): None, (0,1): None, (0,2): None, 
             (1,0): None, (1,1): None, (1,2): None, 
@@ -62,7 +63,15 @@ class Game:
         
         return True
 
-boards = {(i, j): Board(assets.board_tables[i][j]) for i in range(3) for j in range(3)}
+symbols = ["X", "O"]
+
+def is_move_valid(game, board_key, board_turn):
+    if board_key and board_turn:
+        if board_turn == game.board_turn or game.free_play:
+            if not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
+                return True
+        return False
+    return False
 
 def make_move(game: Game, board_turn, board_key):
     game.info[board_turn].info[board_key] = game.player_turn
