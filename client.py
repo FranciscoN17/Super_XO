@@ -1,8 +1,7 @@
 import pygame, socket, pickle, threading, sys
 
-import utils, assets
-from utils import Board, Game
-
+import utils, assets, network
+from utils import Game
 
 SERVER_IP = "localhost"
 PORT = 5000
@@ -10,10 +9,11 @@ PORT = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.connect((SERVER_IP, PORT))
 
-game = Game(utils.boards)
+game = Game()
+my_symbol = ""
 
 def receive(socket):
-    global game
+    global game, my_symbol
     buffer = b""
     while True:
         try:
@@ -22,7 +22,7 @@ def receive(socket):
                 break
             buffer += packet
             while buffer:
-                game = pickle.loads(buffer)
+                game, my_symbol = pickle.loads(buffer)
                 print("game recebido")
                 buffer = b""
         except:
@@ -35,10 +35,10 @@ threading.Thread(target=receive, args=(sock,), daemon=True).start()
 pygame.init()
 
 screen = pygame.display.set_mode((assets.height,assets.width))
-pygame.display.set_caption("Super XO - Client")
 
 while True:
     utils.show_game(game, screen)
+    pygame.display.set_caption(f"Super XO - Client {my_symbol}")
     #EVENT HANDLER
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -50,7 +50,6 @@ while True:
         clicked_pos = utils.handle_click(event)
         #Verifica em qual célula do tabuleiro o jogador clicou
         board_key, board_turn  = utils.get_board_key_from_pos_global(game, clicked_pos)
-        data = pickle.dumps((board_key, board_turn))
-        sock.sendall(data)
+        network.send_move(sock, board_key, board_turn)
 
     pygame.display.flip()
