@@ -1,10 +1,7 @@
-import socket, sys, threading
-import pickle
-import pygame
+import pygame, socket, pickle, threading, sys
 
-import utils
-import assets
-from utils import Board, Game
+import utils, assets, network
+from utils import Game
 
 HOST = "localhost"
 PORT = 5000
@@ -14,11 +11,10 @@ server.bind((HOST, PORT))
 server.listen(2)
 
 clients = []
-symbols = ["X", "O"]
 
 print("Servidor aguardando jogadores...")
 
-game = Game(utils.boards)
+game = Game()
 
 def receive(socket, symbol):
     global game
@@ -33,13 +29,9 @@ def receive(socket, symbol):
                 while buffer:
                     (board_key_temp, board_turn_temp) = pickle.loads(buffer)
 
-                    if board_key_temp and board_turn_temp:
-                        if (board_turn_temp == game.board_turn or game.free_play):
-                            if not game.info[board_turn_temp].info[board_key_temp] and not game.info[board_turn_temp].winner:
-                                game = utils.make_move(game, board_turn_temp, board_key_temp)
-                                data = pickle.dumps(game)
-                                for client in clients:
-                                    client.sendall(data)
+                    if utils.is_move_valid(game, board_key_temp, board_turn_temp):
+                        game = utils.make_move(game, board_turn_temp, board_key_temp)
+                        network.send_game_state(game, clients)
                     buffer = b""
 
             except:
@@ -47,11 +39,12 @@ def receive(socket, symbol):
 
 while len(clients) < 2:
     client, addr = server.accept()
-    symbol = symbols[len(clients)]
+    symbol = utils.symbols[len(clients)]
     clients.append(client)
     threading.Thread(target=receive, args=(client, symbol), daemon=True).start()
     print(f"Jogador {symbol} conectado:", addr)
 
+network.send_game_state(game, clients)
 ## GAME CONFIGURATION ##
 
 pygame.init()
