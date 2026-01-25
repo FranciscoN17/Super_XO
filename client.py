@@ -3,7 +3,7 @@ import pygame, socket, pickle, threading, sys
 import utils, assets, network
 from utils import Game
 
-SERVER_IP = "localhost"
+SERVER_IP = "192.168.0.154"
 PORT = 5000
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -14,17 +14,13 @@ my_symbol = ""
 
 def receive(socket):
     global game, my_symbol
-    buffer = b""
     while True:
         try:
-            packet = socket.recv(4096)
-            if not packet:
+            msg = network.recv_msg(socket)
+            if not msg:
                 break
-            buffer += packet
-            while buffer:
-                game, my_symbol = pickle.loads(buffer)
-                print("game recebido")
-                buffer = b""
+            game, my_symbol = msg
+            print("game recebido")
         except:
             break
 
@@ -50,6 +46,6 @@ while True:
         clicked_pos = utils.handle_click(event)
         #Verifica em qual célula do tabuleiro o jogador clicou
         board_key, board_turn  = utils.get_board_key_from_pos_global(game, clicked_pos)
-        network.send_move(sock, board_key, board_turn)
+        network.send_msg(sock, (board_key, board_turn))
 
     pygame.display.flip()

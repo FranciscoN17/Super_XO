@@ -3,7 +3,7 @@ import pygame, socket, pickle, threading, sys
 import utils, assets, network
 from utils import Game
 
-HOST = "localhost"
+HOST = "192.168.0.154"
 PORT = 5000
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,21 +18,19 @@ game = Game()
 
 def receive(socket, symbol):
     global game
-    buffer = b""
     while True:
         if symbol == game.player_turn:
             try:
-                packet = socket.recv(4096)
-                if not packet:
+                msg = network.recv_msg(socket)
+                if not msg:
                     break
-                buffer += packet
-                while buffer:
-                    (board_key_temp, board_turn_temp) = pickle.loads(buffer)
+                (board_key_temp, board_turn_temp) = msg
 
-                    if utils.is_move_valid(game, board_key_temp, board_turn_temp):
-                        game = utils.make_move(game, board_turn_temp, board_key_temp)
-                        network.send_game_state(game, clients)
-                    buffer = b""
+                if utils.is_move_valid(game, board_key_temp, board_turn_temp):
+                    game = utils.make_move(game, board_turn_temp, board_key_temp)
+                    for client in clients:
+                        print("jogo enviado para cliente")
+                        network.send_msg(client, (game, symbol))
 
             except:
                 break
@@ -44,7 +42,8 @@ while len(clients) < 2:
     threading.Thread(target=receive, args=(client, symbol), daemon=True).start()
     print(f"Jogador {symbol} conectado:", addr)
 
-network.send_game_state(game, clients)
+for client in clients:
+    network.send_msg(client, (game, utils.symbols[clients.index(client)]))
 ## GAME CONFIGURATION ##
 
 pygame.init()
