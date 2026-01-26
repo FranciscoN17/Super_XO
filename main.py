@@ -1,14 +1,13 @@
 import pygame
-import utils
-import assets
+import utils, front, assets
 import menu
-from utils import Board, Game
+from utils import Game
 
 # pygame.init()
 screen = pygame.display.set_mode((assets.height,assets.width))
 pygame.display.set_caption("Super XO")
 
-game = Game(utils.boards)
+game = Game()
 
 running = True
 
@@ -42,7 +41,7 @@ while running:
     elif current_state == GAME_STATE:
 
         #Mostra a UI do jogo
-        utils.show_game(game, screen)
+        front.show_game(game, screen)
 
         #Event handler
         for event in pygame.event.get():
@@ -53,22 +52,9 @@ while running:
             #Verifica se o jogador clicou em algum lugar
             if utils.handle_click(event):
                 clicked_pos = utils.handle_click(event)
-                #Caso a jogada atual não seja livre
-                if not game.free_play:
-                    #Verifica em qual célula do tabuleiro o jogador clicou
-                    board_key = utils.get_board_key_from_pos(clicked_pos, game.info[game.board_turn].positions)
-
-                    #Faz a jogada se a célula estiver vazia
-                    if board_key and not game.info[game.board_turn].info[board_key]:
-                        game = utils.make_move(game, game.board_turn, board_key)
-                #Caso a jogada atual seja livre
-                else:
-                    #Verifica em qual célula do tabuleiro o jogador clicou
-                    board_key, board_turn = utils.get_board_key_from_pos_global(game, clicked_pos)
-
-                    #Faz a jogada se a célula estiver vazia e disponível
-                    if board_key and not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
-                        game = utils.make_move(game, board_turn, board_key)
+                #Verifica em qual célula do tabuleiro o jogador clicou
+                board_key, board_turn = utils.get_board_key_from_pos_global(game, clicked_pos)
+                game.make_move(board_turn, board_key)
 
         #Finaliza o jogo se houver um vencedor
         if game.winner:
