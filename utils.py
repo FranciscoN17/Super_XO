@@ -11,10 +11,26 @@ class Board:
         }
         self._winner = None
 
+    def check_winner(self):
+        # Check rows
+        for row in range(3):
+            if self.info[(row, 0)] == self.info[(row, 1)] == self.info[(row, 2)] != None:
+                return self.info[(row, 0)]
+        # Check columns
+        for col in range(3):
+            if self.info[(0, col)] == self.info[(1, col)] == self.info[(2, col)] != None:
+                return self.info[(0, col)]
+        # Check diagonals
+        if self.info[(0, 0)] == self.info[(1, 1)] == self.info[(2, 2)] != None:
+            return self.info[(0, 0)]
+        if self.info[(0, 2)] == self.info[(1, 1)] == self.info[(2, 0)] != None:
+            return self.info[(0, 2)]
+        return None
+
     @property
     def winner(self):
         if self._winner == None:
-            self._winner = check_winner(self.info)
+            self._winner = self.check_winner()
         return self._winner
     
     @property
@@ -44,9 +60,47 @@ class Game:
         self.free_play = True
         self.player_turn = "X"
 
+    def is_move_valid(self, board_key, board_turn):
+        if board_key and board_turn:
+            if board_turn == self.board_turn or self.free_play:
+                if not self.info[board_turn].info[board_key] and not self.info[board_turn].winner:
+                    return True
+            return False
+        return False
+
+    def is_next_move_free(self, board_turn):
+        if self.info[board_turn].winner:
+            return True
+        return False
+
+    def make_move(self, board_turn, board_key):
+        if self.is_move_valid(board_key, board_turn):
+            self.info[board_turn].info[board_key] = self.player_turn
+            self.player_turn = "O" if self.player_turn == "X" else "X"
+            self.board_turn = board_key if board_key else board_turn
+            self.free_play = self.is_next_move_free(self.board_turn)
+            return True
+        return False
+
+    def check_winner(self, info):
+        # Check rows
+        for row in range(3):
+            if info[(row, 0)] == info[(row, 1)] == info[(row, 2)] != None:
+                return info[(row, 0)]
+        # Check columns
+        for col in range(3):
+            if info[(0, col)] == info[(1, col)] == info[(2, col)] != None:
+                return info[(0, col)]
+        # Check diagonals
+        if info[(0, 0)] == info[(1, 1)] == info[(2, 2)] != None:
+            return info[(0, 0)]
+        if info[(0, 2)] == info[(1, 1)] == info[(2, 0)] != None:
+            return info[(0, 2)]
+        return None
+
     @property
     def winner(self):
-        self._winner = check_winner({k: v.winner for k, v in self.info.items()})
+        self._winner = self.check_winner({k: v.winner for k, v in self.info.items()})
         return self._winner
     
     @property
@@ -64,27 +118,6 @@ class Game:
         return True
 
 symbols = ["X", "O"]
-
-def is_move_valid(game, board_key, board_turn):
-    if board_key and board_turn:
-        if board_turn == game.board_turn or game.free_play:
-            if not game.info[board_turn].info[board_key] and not game.info[board_turn].winner:
-                return True
-        return False
-    return False
-
-def make_move(game: Game, board_turn, board_key):
-    game.info[board_turn].info[board_key] = game.player_turn
-    game.player_turn = "O" if game.player_turn == "X" else "X"
-    board_turn = board_key if board_key else board_turn
-    game.board_turn = board_turn
-    game.free_play = is_next_move_free(game, board_turn)
-    return game
-
-def is_next_move_free(game: Game, board_turn):
-    if game.info[board_turn].winner:
-        return True
-    return False
 
 def get_board_key_from_pos(pos, board_table):
     if pos:
@@ -108,46 +141,3 @@ def handle_click(event):
             mouse_pos = pygame.mouse.get_pos()
             return mouse_pos
         return None
-
-def check_winner(board_info):
-    # Check rows
-    for row in range(3):
-        if board_info[(row, 0)] == board_info[(row, 1)] == board_info[(row, 2)] != None:
-            return board_info[(row, 0)]
-    # Check columns
-    for col in range(3):
-        if board_info[(0, col)] == board_info[(1, col)] == board_info[(2, col)] != None:
-            return board_info[(0, col)]
-    # Check diagonals
-    if board_info[(0, 0)] == board_info[(1, 1)] == board_info[(2, 2)] != None:
-        return board_info[(0, 0)]
-    if board_info[(0, 2)] == board_info[(1, 1)] == board_info[(2, 0)] != None:
-        return board_info[(0, 2)]
-    return None
-
-#Desenha o retângulo verde em volta do tabuleiro que pode ser jogado
-def draw_green_rectangle(game: Game, screen):
-    if game.free_play:
-        pygame.draw.rect(screen, (0,255,0), (2, 2, assets.width-4, assets.height-4), 3)
-    else:
-        pygame.draw.rect(screen, (0,255,0), (game.board_turn[1]*264+3, game.board_turn[0]*264+3, 265, 265), 3)
-
-#Desenha X e O na tela de acordo com o que tem salvo nos tabuleiros
-def show_game(game: Game, screen):
-    screen.blit(assets.board_sprite, (0,0))
-    draw_green_rectangle(game, screen)
-
-    for board_key in game.info:
-        for cell_key in game.info[board_key].positions:
-            if not game.info[board_key].winner:
-                draw_pos = game.info[board_key].positions[cell_key]
-                if game.info[board_key].info[cell_key] == "X":
-                    screen.blit(assets.x_sprite, draw_pos)
-                elif game.info[board_key].info[cell_key] == "O":
-                    screen.blit(assets.o_sprite, draw_pos)
-            else:
-                center_pos = (board_key[1]*264+3, board_key[0]*264+3)
-                if game.info[board_key].winner == "X":
-                    screen.blit(pygame.transform.scale(assets.x_sprite, (264, 264)), center_pos)
-                elif game.info[board_key].winner == "O":
-                    screen.blit(pygame.transform.scale(assets.o_sprite, (264, 264)), center_pos)
