@@ -59,17 +59,30 @@ class Game:
         self.board_turn = None
         self.free_play = True
         self.player_turn = "X"
+    
+    def reset(self):
+        for board in self.info.values():
+            board.info = {
+                (0,0): None, (0,1): None, (0,2): None,
+                (1,0): None, (1,1): None, (1,2): None,
+                (2,0): None, (2,1): None, (2,2): None,
+            }
+            board._winner = None
+        self._winner = None
+        self.board_turn = None
+        self.free_play = True
+        self.player_turn = "X"
 
     def is_move_valid(self, board_key, board_turn):
         if board_key and board_turn:
             if board_turn == self.board_turn or self.free_play:
-                if not self.info[board_turn].info[board_key] and not self.info[board_turn].winner:
+                if not self.info[board_turn].info[board_key] and not self.info[board_turn].winner and not self.info[board_turn].draw:
                     return True
             return False
         return False
 
     def is_next_move_free(self, board_turn):
-        if self.info[board_turn].winner:
+        if self.info[board_turn].winner or self.info[board_turn].draw:
             return True
         return False
 

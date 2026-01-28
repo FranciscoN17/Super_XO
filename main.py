@@ -36,6 +36,7 @@ while running:
     
     if current_state in (GAME_OVER_DRAW_STATE, GAME_OVER_X_STATE, GAME_OVER_O_STATE):
         current_state = menu.draw_game_over(screen, events, current_state, MENU_STATE)
+        game.reset()
     
 
     elif current_state == GAME_STATE:
