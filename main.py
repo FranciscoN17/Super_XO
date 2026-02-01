@@ -4,7 +4,7 @@ import menu
 from utils import Game
 
 # pygame.init()
-screen = pygame.display.set_mode((assets.height,assets.width))
+screen = pygame.display.set_mode((assets.HEIGHT,assets.WIDTH))
 pygame.display.set_caption("Super XO")
 
 game = Game()

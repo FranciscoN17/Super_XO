@@ -14,15 +14,15 @@ def draw_menu(screen, events, current_state, GAME_STATE):
 
     # 1. Draw Title
     title_text = assets.TITLE_FONT.render("Super XO", False, WHITE)
-    title_rect = title_text.get_rect(center=(assets.width // 2, assets.height // 4))
+    title_rect = title_text.get_rect(center=(assets.WIDTH // 2, assets.HEIGHT // 4))
     screen.blit(title_text, title_rect)
 
     # 2. Draw Play Button
     # Define button dimensions and position
     button_width = 200
     button_height = 75
-    button_x = assets.width // 2 - button_width // 2
-    button_y = assets.height // 2
+    button_x = assets.WIDTH // 2 - button_width // 2
+    button_y = assets.HEIGHT // 2
 
     play_button = pygame.Rect(button_x, button_y, button_width, button_height)
     
@@ -66,15 +66,15 @@ def draw_game_over(screen, events, current_state, MENU_STATE):
 
     # 1. Draw Game Over Title
     title_text = assets.TITLE_FONT.render(title, False, WHITE)
-    title_rect = title_text.get_rect(center=(assets.width // 2, assets.height // 4))
+    title_rect = title_text.get_rect(center=(assets.WIDTH // 2, assets.HEIGHT // 4))
     screen.blit(title_text, title_rect)
 
     # 2. Draw Return to Menu Button
     # button_width = 300
     button_width = 600
     button_height = 75
-    button_x = assets.width // 2 - button_width // 2
-    button_y = assets.height // 2
+    button_x = assets.WIDTH // 2 - button_width // 2
+    button_y = assets.HEIGHT // 2
 
     menu_button = pygame.Rect(button_x, button_y, button_width, button_height)
     
