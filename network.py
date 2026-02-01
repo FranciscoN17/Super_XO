@@ -1,4 +1,4 @@
-import pickle, threading, socket, pygame, sys
+import pickle, threading, socket, pygame, sys, random
 import utils, front, assets
 from utils import Game
 
@@ -98,7 +98,7 @@ class Client:
         threading.Thread(target=self.receive, args=(), daemon=True).start()
 
         pygame.init()
-        screen = pygame.display.set_mode((assets.height,assets.width))
+        screen = pygame.display.set_mode((assets.HEIGHT,assets.WIDTH))
 
         while True:
             front.show_game(self.game, screen)
@@ -110,11 +110,45 @@ class Client:
                     self.sock.close()
                     sys.exit()
 
-            if utils.handle_click(event):
-                clicked_pos = utils.handle_click(event)
-                #Verifica em qual célula do tabuleiro o jogador clicou
-                board_key, board_turn  = utils.get_board_key_from_pos_global(self.game, clicked_pos)
-                send_msg(self.sock, (board_key, board_turn))
-                print("enviado:", (board_key, board_turn))
+                if utils.handle_click(event):
+                    clicked_pos = utils.handle_click(event)
+                    #Verifica em qual célula do tabuleiro o jogador clicou
+                    board_key, board_turn  = utils.get_board_key_from_pos_global(self.game, clicked_pos)
+                    send_msg(self.sock, (board_key, board_turn))
+                    print("enviado:", (board_key, board_turn))
 
             pygame.display.flip()
+    
+class AIClient(Client):
+    def start(self):
+
+        while True:
+            try:
+                msg = recv_msg(self.sock)
+                if not msg:
+                    break
+                self.game, self.symbol = msg
+                print("game recebido")
+            except:
+                break
+            wait = random.uniform(0.5, 1.5)
+            pygame.time.delay(int(wait * 1000))
+            if self.symbol == self.game.player_turn:
+                board_key, board_turn = self.chose_next_move()
+                send_msg(self.sock, (board_key, board_turn))
+                print("enviado:", (board_key, board_turn))
+    
+    def chose_next_move(self):
+        possible_moves = []
+        if self.game.free_play:
+            for board_turn in self.game.info:
+                    for board_key in self.game.info[board_turn].positions:
+                        if self.game.is_move_valid(board_key, board_turn):
+                            possible_moves.append((board_key, board_turn))
+        else:
+            for board_key in self.game.info[self.game.board_turn].positions:
+                if self.game.is_move_valid(board_key, self.game.board_turn):
+                    possible_moves.append((board_key, self.game.board_turn))
+        chosen_move = random.choice(possible_moves)
+        print("AI escolheu:", chosen_move)
+        return chosen_move
