@@ -3,6 +3,8 @@
 Super XO is a python-based version of the [Ultimate Tic-Tac-Toe](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) game.
 In this project you can play agains yourself, a local friend, a online friend or even agains an ai that choses random moves.
 
+<img src="assets/sample_game.png" alt="Texto alternativo" width="400"/>
+
 ---
 
 ## 🚀 Installation
